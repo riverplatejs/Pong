@@ -125,6 +125,10 @@ while 1:
 
 
 
+<<<<<<< HEAD
+=======
+ball_test.moveBall() 
+>>>>>>> origin/master
 
 
 
