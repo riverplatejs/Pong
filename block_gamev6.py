@@ -4,7 +4,7 @@ Created on Mon Apr 18 20:00:23 2016
 
 @author: joaquin
 """
-import pygame, sys, math, time, random
+import pygame, sys, math, time, random, pygame.mixer
 pygame.init()
 
 black = 0,0,0
@@ -18,7 +18,10 @@ screen_rect = screen.get_rect()
 ###Score_board###
 score1 = 0
 score2 = 0
-
+#Sounds
+bounce = pygame.mixer.Sound('bounce.wav')
+point = pygame.mixer.Sound('point.wav')
+win = pygame.mixer.Sound('win.wav')
 
 def scoreboard(score1, score2):
     font = pygame.font.Font(None, 36)
@@ -127,6 +130,7 @@ class Ballz:
             self.yspeed = math.copysign(self.speed,-self.norm_intersectY)*math.sin(abs(math.radians(self.bounce_angle)))
             self.bounced = True
             self.last_time1 = int(round(time.time() * 1000))
+            bounce.play()
             
         #Bouncing against vertical wall sides    
         self.diff_time2 = int(round(time.time() * 1000)) - self.last_time2        
@@ -143,14 +147,16 @@ class Ballz:
         if self.ball_rect.x < 0:
             self.new_ball()
             score2 += 1
+            point.play()
            
         if self.ball_rect.x > infoObject.current_w:
             self.new_ball()
             score1 += 1
+            point.play()
             
     def new_ball(self):
         self.x, self.y = infoObject.current_w/2, infoObject.current_h/2
-        self.xspeed, self.yspeed = random.choice([1,-1])*random.uniform(1.4,2.5), random.choice([1,-1])*random.uniform(0,1)
+        self.xspeed, self.yspeed = random.choice([1,-1])*random.uniform(1.4,2.0), random.choice([1,-1])*random.uniform(0,1)
         self.speed = ((self.xspeed)**2 + (self.yspeed)**2)**(1/2)
 
 
