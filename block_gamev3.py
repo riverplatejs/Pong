@@ -72,19 +72,7 @@ class Ballz:
         if self.ball_rect.colliderect(racket2.pos_racket) or self.ball_rect.colliderect(racket1.pos_racket):    
             self.ballDirX = self.ballDirX * -1
 
-#    def windowCollision(ball, ballDirX, ballDirY):
-#        if ball.top == (lineThickness) or ball.bottom == (windowHeight - lineThickness):
-#            ballDirY = ballDirY * -1
-#            if ball.left == (lineThickness) or ball.right == (windowWidth - lineThickness):
-#                ballDirX = ballDirX * -1
-#                return ballDirX, ballDirY
-#   
-#    def paddleCollision(ball, PADDLE1, PADDLE2, ballDirX):
-#        if ballDirX == -1 and PADDLE1.right == ball.left and PADDLE1.top < ball.top and PADDLE1.bottom > ball.bottom:
-#            return -1
-#        elif ballDirX == 1 and PADDLE2.left == ball.right and PADDLE2.top < ball.top and PADDLE2.bottom > ball.bottom:
-#            return -1
-#        else: return 1
+
         
 ball1 = Ballz(1,1,6)                  
            

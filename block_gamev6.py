@@ -4,7 +4,7 @@ Created on Mon Apr 18 20:00:23 2016
 
 @author: joaquin
 """
-import pygame, sys, math
+import pygame, sys, math, time, random
 pygame.init()
 
 black = 0,0,0
@@ -15,6 +15,29 @@ y = infoObject.current_h/2      #Starts in the middle of the screen (same
 x = infoObject.current_w - 21 
 screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN)
 screen_rect = screen.get_rect()
+###Score_board###
+score1 = 0
+score2 = 0
+
+
+def scoreboard(score1, score2):
+    font = pygame.font.Font(None, 36)
+        
+    scoreDisplay = "Player 1: "+str(score1)
+    score_surf = font.render(scoreDisplay, 1, white)
+    score_pos = (0, 0)
+    screen.blit(score_surf, score_pos)
+
+    scoreDisplay2 = "Player 2: "+str(score2)
+    score_surf2 = font.render(scoreDisplay2, 1, white)
+    score_pos2 = (1155, 0)
+    screen.blit(score_surf2, score_pos2)
+
+        
+   
+    
+  
+
 
 #Racket class
 class Racket:
@@ -27,7 +50,7 @@ class Racket:
         self.pos_racket = self.racket.get_rect()
         self.yspeed = 0
         self.pos_racket.x = self.x_start
-        self.pos_racket.y = infoObject.current_h/2 - self.pos_racket.width
+        self.pos_racket.y = infoObject.current_h/2 - self.pos_racket.width/2
         self.up_id = up_id
         self.down_id = down_id
     
@@ -35,9 +58,10 @@ class Racket:
     def key_detection(self):
         if event.type == pygame.KEYDOWN:
             if event.key == self.up_id:
-                self.yspeed = -2
+                self.yspeed = -1
+                print('keydown')
             elif event.key == self.down_id:
-                self.yspeed = 2
+                self.yspeed = 1
         if event.type == pygame.KEYUP:
             if event.key == self.up_id or event.key == self.down_id:
                 self.yspeed = 0    
@@ -65,6 +89,7 @@ class Ballz:
     
         self.xspeed = xspeed
         self.yspeed = yspeed
+        self.speed = ((self.xspeed)**2 + (self.yspeed)**2)**(1/2)
         
         self.intersectY = 0
         self.norm_intersectY = 0
@@ -72,7 +97,15 @@ class Ballz:
         
         self.x = self.ball_rect.x                   #Proxy variables to enable position floats
         self.y = self.ball_rect.y
-
+        
+        self.last_time1 = 0
+        self.diff_time1 = 0
+        
+        self.last_time2 = 0
+        self.diff_time2 = 0
+        
+        self.bounced = False
+        
     def moveBall(self):
         self.x += self.xspeed
         self.y += self.yspeed        
@@ -82,50 +115,56 @@ class Ballz:
                  
             
     def bounce_check(self,racket_num):
-        if self.ball_rect.colliderect(racket_num.pos_racket):    
-            print('collision', racket_num)
-#            self.xspeed = self.xspeed * -1
-            self.intersectY = abs(((self.ball_rect.y + self.radius) - (racket_num.pos_racket.y + (racket_num.pos_racket.height)/2)))             #Find absolute value of point of intersection relative to origin
+        
+        #Bouncing against rackets
+        self.diff_time1 = int(round(time.time() * 1000)) - self.last_time1 
+        if self.ball_rect.colliderect(racket_num.pos_racket) and self.diff_time1 > 1000:  
+            
+            self.intersectY = ((self.ball_rect.y + self.radius) - (racket_num.pos_racket.y + (racket_num.pos_racket.height)/2))           #Find absolute value of point of intersection relative to origin
             self.norm_intersectY = self.intersectY/(racket_num.pos_racket.height/2)          #Normalize point of intersection
             self.bounce_angle = Ballz.max_bounce_angle * self.norm_intersectY                #Find the scaled bounce angle 
-            print(self.intersectY)          
-            print(self.bounce_angle)
-         
-            print(self.ball_rect.y)
-            print(racket_num.pos_racket.y)
-            print(racket_num.pos_racket.height)
+            self.xspeed = math.copysign(self.speed,-1*self.xspeed)*math.cos(abs(math.radians(self.bounce_angle)))
+            self.yspeed = math.copysign(self.speed,-self.norm_intersectY)*math.sin(abs(math.radians(self.bounce_angle)))
+            self.bounced = True
+            self.last_time1 = int(round(time.time() * 1000))
             
-            self.xspeed = .5*math.cos(math.radians(self.bounce_angle)) * -1
-            self.yspeed = .5*math.sin(math.radians(self.bounce_angle))
-
-            print(self.xspeed)
-            print(self.yspeed)
+        #Bouncing against vertical wall sides    
+        self.diff_time2 = int(round(time.time() * 1000)) - self.last_time2        
+        if (self.y < 0 or self.y > infoObject.current_h) and self.diff_time2 > 1000:
             
-        if self.y < 0 or self.y > infoObject.current_h:
             self.yspeed = self.yspeed * -1
-#    def windowCollision(ball, ballDirX, ballDirY):
-#        if ball.top == (lineThickness) or ball.bottom == (windowHeight - lineThickness):
-#            ballDirY = ballDirY * -1
-#            if ball.left == (lineThickness) or ball.right == (windowWidth - lineThickness):
-#                ballDirX = ballDirX * -1
-#                return ballDirX, ballDirY
-#   
-#    def paddleCollision(ball, PADDLE1, PADDLE2, ballDirX):
-#        if ballDirX == -1 and PADDLE1.right == ball.left and PADDLE1.top < ball.top and PADDLE1.bottom > ball.bottom:
-#            return -1
-#        elif ballDirX == 1 and PADDLE2.left == ball.right and PADDLE2.top < ball.top and PADDLE2.bottom > ball.bottom:
-#            return -1
-#        else: return 1
+            self.bounced = True
+            self.last_time2 = int(round(time.time() * 1000)) 
         
-ball1 = Ballz(.5,0,6)                  
+    def check_bounds(self):
+        global score1
+        global score2        
+        
+        if self.ball_rect.x < 0:
+            self.new_ball()
+            score2 += 1
+           
+        if self.ball_rect.x > infoObject.current_w:
+            self.new_ball()
+            score1 += 1
+            
+    def new_ball(self):
+        self.x, self.y = infoObject.current_w/2, infoObject.current_h/2
+        self.xspeed, self.yspeed = random.uniform(-3.0,3.0), random.uniform(-1.5,1.5)
+        self.speed = self.speed = ((self.xspeed)**2 + (self.yspeed)**2)**(1/2)
+
+
+ball1 = Ballz(1.2,0,6)                  
            
 #Initialize rackets
 racket1 = Racket(0,pygame.K_w,pygame.K_s)
 racket2 = Racket(infoObject.current_w - Racket.racket_p.get_width(),pygame.K_UP,pygame.K_DOWN)
 
-pygame.key.set_repeat(2,2)
+pygame.key.set_repeat(7,7)
 
 #Infinite loop to check for user input
+
+
 while 1: 
    
     screen.fill(black)    
@@ -145,13 +184,14 @@ while 1:
     racket2.update_position()
     
     ball1.moveBall()
+    ball1.check_bounds()
         
     #Update screen
-    ball1.bounce_check(racket2)
     ball1.bounce_check(racket1)
+    ball1.bounce_check(racket2)
     
-
-
+    scoreboard(score1, score2)
+       
     pygame.display.flip()
 
 
