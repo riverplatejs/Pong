@@ -156,7 +156,7 @@ class Ballz:
             
     def new_ball(self):
         self.x, self.y = infoObject.current_w/2, infoObject.current_h/2
-        self.xspeed, self.yspeed = random.choice([1,-1])*random.uniform(1.4,2.0), random.choice([1,-1])*random.uniform(0,1)
+        self.xspeed, self.yspeed = random.choice([1,-1])*random.uniform(1.7,2.0), random.choice([1,-1])*random.uniform(0,1)
         self.speed = ((self.xspeed)**2 + (self.yspeed)**2)**(1/2)
 
 
