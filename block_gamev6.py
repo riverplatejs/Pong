@@ -130,7 +130,7 @@ class Ballz:
             
         #Bouncing against vertical wall sides    
         self.diff_time2 = int(round(time.time() * 1000)) - self.last_time2        
-        if (self.y < 0 or self.y > infoObject.current_h) and self.diff_time2 > 1000:
+        if (self.y < 0 or self.y + self.ball_rect.height > infoObject.current_h) and self.diff_time2 > 1000:
             
             self.yspeed = self.yspeed * -1
             self.bounced = True
@@ -150,8 +150,8 @@ class Ballz:
             
     def new_ball(self):
         self.x, self.y = infoObject.current_w/2, infoObject.current_h/2
-        self.xspeed, self.yspeed = random.uniform(-3.0,3.0), random.uniform(-1.5,1.5)
-        self.speed = self.speed = ((self.xspeed)**2 + (self.yspeed)**2)**(1/2)
+        self.xspeed, self.yspeed = random.choice([1,-1])*random.uniform(1.4,2.5), random.choice([1,-1])*random.uniform(0,1)
+        self.speed = ((self.xspeed)**2 + (self.yspeed)**2)**(1/2)
 
 
 ball1 = Ballz(1.2,0,6)                  
