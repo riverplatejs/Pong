@@ -36,12 +36,6 @@ def scoreboard(score1, score2):
     score_pos2 = (1155, 0)
     screen.blit(score_surf2, score_pos2)
 
-        
-   
-    
-  
-
-
 #Racket class
 class Racket:
     
