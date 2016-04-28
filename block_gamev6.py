@@ -56,7 +56,6 @@ class Racket:
         if event.type == pygame.KEYDOWN:
             if event.key == self.up_id:
                 self.yspeed = -1
-                print('keydown')
             elif event.key == self.down_id:
                 self.yspeed = 1
         if event.type == pygame.KEYUP:
